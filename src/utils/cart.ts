@@ -15,3 +15,13 @@ export function addToCart(cart: Cart, bookId: string): Cart {
 export function removeFromCart(cart: Cart, bookId: string): Cart {
   return cart.filter((item) => item.bookId !== bookId);
 }
+
+export function increaseQuantity(cart: Cart, bookId: string): Cart {
+  void bookId;
+  return [...cart];
+}
+
+export function decreaseQuantity(cart: Cart, bookId: string): Cart {
+  void bookId;
+  return [...cart];
+}

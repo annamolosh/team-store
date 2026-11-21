@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Cart } from '../src/types/cart';
-import { addToCart, removeFromCart } from '../src/utils/cart';
+import { addToCart, decreaseQuantity, increaseQuantity, removeFromCart } from '../src/utils/cart';
 
 describe('addToCart', () => {
   it('adds a book to an empty cart', () => {
@@ -54,6 +54,58 @@ describe('removeFromCart', () => {
     const before = structuredClone(cart);
 
     removeFromCart(cart, '1');
+
+    expect(cart).toEqual(before);
+  });
+});
+
+describe('increaseQuantity', () => {
+  it('increases quantity by 1', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 2 }];
+
+    expect(increaseQuantity(cart, '1')).toEqual([{ bookId: '1', quantity: 3 }]);
+  });
+
+  it('returns the cart unchanged for a non-existent id', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 2 }];
+
+    expect(increaseQuantity(cart, '999')).toEqual(cart);
+  });
+
+  it('does not mutate the original cart', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 2 }];
+    const before = structuredClone(cart);
+
+    increaseQuantity(cart, '1');
+
+    expect(cart).toEqual(before);
+  });
+});
+
+describe('decreaseQuantity', () => {
+  it('decreases quantity by 1', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 3 }];
+
+    expect(decreaseQuantity(cart, '1')).toEqual([{ bookId: '1', quantity: 2 }]);
+  });
+
+  it('does not go below 1', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 1 }];
+
+    expect(decreaseQuantity(cart, '1')).toEqual([{ bookId: '1', quantity: 1 }]);
+  });
+
+  it('returns the cart unchanged for a non-existent id', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 3 }];
+
+    expect(decreaseQuantity(cart, '999')).toEqual(cart);
+  });
+
+  it('does not mutate the original cart', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 3 }];
+    const before = structuredClone(cart);
+
+    decreaseQuantity(cart, '1');
 
     expect(cart).toEqual(before);
   });
