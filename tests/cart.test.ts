@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Cart } from '../src/types/cart';
-import { addToCart } from '../src/utils/cart';
+import { addToCart, removeFromCart } from '../src/utils/cart';
 
 describe('addToCart', () => {
   it('adds a book to an empty cart', () => {
@@ -30,5 +30,31 @@ describe('addToCart', () => {
 
     expect(cart).toEqual(before);
     expect(result).not.toBe(cart);
+  });
+});
+
+describe('removeFromCart', () => {
+  it('removes the matching row and keeps the others', () => {
+    const cart: Cart = [
+      { bookId: '1', quantity: 1 },
+      { bookId: '2', quantity: 3 },
+    ];
+
+    expect(removeFromCart(cart, '1')).toEqual([{ bookId: '2', quantity: 3 }]);
+  });
+
+  it('returns the cart unchanged for a non-existent id', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 1 }];
+
+    expect(removeFromCart(cart, '999')).toEqual(cart);
+  });
+
+  it('does not mutate the original cart', () => {
+    const cart: Cart = [{ bookId: '1', quantity: 1 }];
+    const before = structuredClone(cart);
+
+    removeFromCart(cart, '1');
+
+    expect(cart).toEqual(before);
   });
 });

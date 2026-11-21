@@ -11,3 +11,8 @@ export function addToCart(cart: Cart, bookId: string): Cart {
     item.bookId === bookId ? { ...item, quantity: item.quantity + 1 } : item,
   );
 }
+
+export function removeFromCart(cart: Cart, bookId: string): Cart {
+  void bookId;
+  return [...cart];
+}
