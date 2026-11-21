@@ -29,5 +29,5 @@ export function decreaseQuantity(cart: Cart, bookId: string): Cart {
 }
 
 export function clearCart(): Cart {
-  return [{ bookId: '', quantity: 0 }];
+  return [];
 }
