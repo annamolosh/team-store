@@ -27,3 +27,7 @@ export function decreaseQuantity(cart: Cart, bookId: string): Cart {
     item.bookId === bookId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item,
   );
 }
+
+export function clearCart(): Cart {
+  return [{ bookId: '', quantity: 0 }];
+}

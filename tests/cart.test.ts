@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { Cart } from '../src/types/cart';
-import { addToCart, decreaseQuantity, increaseQuantity, removeFromCart } from '../src/utils/cart';
+import {
+  addToCart,
+  clearCart,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from '../src/utils/cart';
 
 describe('addToCart', () => {
   it('adds a book to an empty cart', () => {
@@ -108,5 +114,11 @@ describe('decreaseQuantity', () => {
     decreaseQuantity(cart, '1');
 
     expect(cart).toEqual(before);
+  });
+});
+
+describe('clearCart', () => {
+  it('returns an empty cart', () => {
+    expect(clearCart()).toEqual([]);
   });
 });
