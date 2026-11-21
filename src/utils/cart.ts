@@ -7,9 +7,7 @@ export function addToCart(cart: Cart, bookId: string): Cart {
     return [...cart, { bookId, quantity: 1 }];
   }
 
-  return cart.map((item) =>
-    item.bookId === bookId ? { ...item, quantity: item.quantity + 1 } : item,
-  );
+  return increaseQuantity(cart, bookId);
 }
 
 export function removeFromCart(cart: Cart, bookId: string): Cart {
