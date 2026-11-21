@@ -21,4 +21,14 @@ export const books: Book[] = [
     stock: 5,
     rating: 4.8,
   },
+  {
+    id: '3',
+    title: 'Pride and Prejudice',
+    author: 'Jane Austen',
+    genre: 'romance',
+    cover: '/images/pride-and-prejudice.jpg',
+    price: 14.99,
+    stock: 8,
+    rating: 4.7,
+  },
 ];
