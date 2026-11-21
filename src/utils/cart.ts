@@ -13,6 +13,5 @@ export function addToCart(cart: Cart, bookId: string): Cart {
 }
 
 export function removeFromCart(cart: Cart, bookId: string): Cart {
-  void bookId;
-  return [...cart];
+  return cart.filter((item) => item.bookId !== bookId);
 }
