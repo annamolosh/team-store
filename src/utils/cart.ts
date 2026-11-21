@@ -17,11 +17,13 @@ export function removeFromCart(cart: Cart, bookId: string): Cart {
 }
 
 export function increaseQuantity(cart: Cart, bookId: string): Cart {
-  void bookId;
-  return [...cart];
+  return cart.map((item) =>
+    item.bookId === bookId ? { ...item, quantity: item.quantity + 1 } : item,
+  );
 }
 
 export function decreaseQuantity(cart: Cart, bookId: string): Cart {
-  void bookId;
-  return [...cart];
+  return cart.map((item) =>
+    item.bookId === bookId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item,
+  );
 }
