@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Book } from '../src/types/book';
-import { filterByPrice, sortBooks } from '../src/utils/catalog-filters';
+import { applyPriceAndSort, filterByPrice, sortBooks } from '../src/utils/catalog-filters';
 
 const makeBook = (id: string, price: number): Book => ({
   id,
@@ -102,5 +102,22 @@ describe('sortBooks', () => {
 
   it('returns an empty array for an empty input', () => {
     expect(sortBooks([], 'asc')).toEqual([]);
+  });
+});
+
+describe('applyPriceAndSort', () => {
+  it('filters by range and then sorts descending', () => {
+    expect(ids(applyPriceAndSort(books, { min: 20, max: 50, sort: 'desc' }))).toEqual([
+      'a',
+      'c',
+      'e',
+    ]);
+  });
+
+  it('returns a copy in the original order with no bounds and default sort', () => {
+    const result = applyPriceAndSort(books, { sort: 'default' });
+
+    expect(result).toEqual(books);
+    expect(result).not.toBe(books);
   });
 });

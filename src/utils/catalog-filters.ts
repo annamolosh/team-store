@@ -32,3 +32,8 @@ export function sortBooks(books: Book[], order: SortOrder): Book[] {
   // Array.prototype.sort is stable (ES2019+), so equal prices keep their order.
   return [...books].sort((a, b) => (a.price - b.price) * direction);
 }
+
+export function applyPriceAndSort(books: Book[], options: PriceAndSortOptions): Book[] {
+  void options;
+  return [...books];
+}
