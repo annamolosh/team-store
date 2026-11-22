@@ -21,3 +21,8 @@ export function filterByPrice(books: Book[], min?: number | null, max?: number |
 
   return books.filter((book) => (!hasMin || book.price >= min) && (!hasMax || book.price <= max));
 }
+
+export function sortBooks(books: Book[], order: SortOrder): Book[] {
+  void order;
+  return [...books];
+}

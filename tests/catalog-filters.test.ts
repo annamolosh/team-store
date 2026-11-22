@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Book } from '../src/types/book';
-import { filterByPrice } from '../src/utils/catalog-filters';
+import { filterByPrice, sortBooks } from '../src/utils/catalog-filters';
 
 const makeBook = (id: string, price: number): Book => ({
   id,
@@ -66,5 +66,41 @@ describe('filterByPrice', () => {
 
     expect(books).toEqual(before);
     expect(result).not.toBe(books);
+  });
+});
+
+describe('sortBooks', () => {
+  it('sorts by price ascending', () => {
+    expect(ids(sortBooks(books, 'asc'))).toEqual(['b', 'c', 'e', 'a', 'd']);
+  });
+
+  it('sorts by price descending', () => {
+    expect(ids(sortBooks(books, 'desc'))).toEqual(['d', 'a', 'c', 'e', 'b']);
+  });
+
+  it('keeps the original order for default', () => {
+    const result = sortBooks(books, 'default');
+
+    expect(ids(result)).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect(result).not.toBe(books);
+  });
+
+  it('keeps the original order of books with the same price', () => {
+    const asc = ids(sortBooks(books, 'asc'));
+    const desc = ids(sortBooks(books, 'desc'));
+
+    expect(asc.indexOf('c')).toBeLessThan(asc.indexOf('e'));
+    expect(desc.indexOf('c')).toBeLessThan(desc.indexOf('e'));
+  });
+
+  it('does not mutate the original array', () => {
+    sortBooks(books, 'asc');
+    sortBooks(books, 'desc');
+
+    expect(ids(books)).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
+
+  it('returns an empty array for an empty input', () => {
+    expect(sortBooks([], 'asc')).toEqual([]);
   });
 });
