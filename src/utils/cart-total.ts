@@ -44,12 +44,12 @@ export function applyPromoCode(current: string | null, input: string): PromoResu
 }
 
 export function getDiscount(subtotal: number, code: string | null): number {
-  void subtotal;
-  void code;
-  return 0;
+  const rate = code && Object.hasOwn(PROMO_CODES, code) ? PROMO_CODES[code] : 0;
+  return fromCents(Math.round(toCents(subtotal) * rate));
 }
 
 export function getTotal(cart: Cart, books: Book[], code: string | null): number {
-  void code;
-  return getSubtotal(cart, books);
+  const subtotal = getSubtotal(cart, books);
+  const discount = getDiscount(subtotal, code);
+  return fromCents(toCents(subtotal) - toCents(discount));
 }
