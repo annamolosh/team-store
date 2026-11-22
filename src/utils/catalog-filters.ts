@@ -23,6 +23,12 @@ export function filterByPrice(books: Book[], min?: number | null, max?: number |
 }
 
 export function sortBooks(books: Book[], order: SortOrder): Book[] {
-  void order;
-  return [...books];
+  if (order === 'default') {
+    return [...books];
+  }
+
+  const direction = order === 'asc' ? 1 : -1;
+
+  // Array.prototype.sort is stable (ES2019+), so equal prices keep their order.
+  return [...books].sort((a, b) => (a.price - b.price) * direction);
 }
