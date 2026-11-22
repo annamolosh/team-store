@@ -1,6 +1,13 @@
 import type { Book } from '../types/book';
 import type { Cart, CartItem } from '../types/cart';
 
+export const PROMO_CODES: Record<string, number> = { SALE10: 0.1 };
+
+export interface PromoResult {
+  code: string | null;
+  error: string | null;
+}
+
 const toCents = (value: number): number => Math.round(value * 100);
 const fromCents = (cents: number): number => cents / 100;
 
@@ -16,4 +23,10 @@ export function getLineTotal(item: CartItem, books: Book[]): number {
 export function getSubtotal(cart: Cart, books: Book[]): number {
   const cents = cart.reduce((sum, item) => sum + getLineCents(item, books), 0);
   return fromCents(cents);
+}
+
+export function applyPromoCode(current: string | null, input: string): PromoResult {
+  void current;
+  void input;
+  return { code: null, error: null };
 }
