@@ -1,0 +1,32 @@
+import { describe, expect, it } from 'vitest';
+import type { Book } from '../src/types/book';
+import type { Cart } from '../src/types/cart';
+import { getSubtotal } from '../src/utils/cart-total';
+
+const makeBook = (id: string, price: number): Book => ({
+  id,
+  title: `Book ${id}`,
+  author: 'Author',
+  genre: 'Genre',
+  cover: '',
+  price,
+  stock: 10,
+  rating: 5,
+});
+
+const books: Book[] = [makeBook('1', 10), makeBook('2', 25), makeBook('3', 100)];
+
+describe('getSubtotal', () => {
+  it('returns 0 for an empty cart', () => {
+    expect(getSubtotal([], books)).toBe(0);
+  });
+
+  it('sums line totals for two items', () => {
+    const cart: Cart = [
+      { bookId: '1', quantity: 2 },
+      { bookId: '2', quantity: 1 },
+    ];
+
+    expect(getSubtotal(cart, books)).toBe(45);
+  });
+});
