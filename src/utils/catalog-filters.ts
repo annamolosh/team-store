@@ -34,6 +34,6 @@ export function sortBooks(books: Book[], order: SortOrder): Book[] {
 }
 
 export function applyPriceAndSort(books: Book[], options: PriceAndSortOptions): Book[] {
-  void options;
-  return [...books];
+  const filtered = filterByPrice(books, options.min, options.max);
+  return sortBooks(filtered, options.sort);
 }
