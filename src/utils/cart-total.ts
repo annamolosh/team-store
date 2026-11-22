@@ -26,7 +26,19 @@ export function getSubtotal(cart: Cart, books: Book[]): number {
 }
 
 export function applyPromoCode(current: string | null, input: string): PromoResult {
-  void current;
-  void input;
-  return { code: null, error: null };
+  if (current) {
+    return { code: current, error: 'Промокод уже применён' };
+  }
+
+  const code = input.trim().toUpperCase();
+
+  if (!code) {
+    return { code: null, error: 'Введите промокод' };
+  }
+
+  if (!Object.hasOwn(PROMO_CODES, code)) {
+    return { code: null, error: 'Неизвестный промокод' };
+  }
+
+  return { code, error: null };
 }
