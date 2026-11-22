@@ -42,3 +42,14 @@ export function applyPromoCode(current: string | null, input: string): PromoResu
 
   return { code, error: null };
 }
+
+export function getDiscount(subtotal: number, code: string | null): number {
+  void subtotal;
+  void code;
+  return 0;
+}
+
+export function getTotal(cart: Cart, books: Book[], code: string | null): number {
+  void code;
+  return getSubtotal(cart, books);
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Book } from '../src/types/book';
 import type { Cart } from '../src/types/cart';
-import { applyPromoCode, getSubtotal } from '../src/utils/cart-total';
+import { applyPromoCode, getSubtotal, getTotal } from '../src/utils/cart-total';
 
 const makeBook = (id: string, price: number): Book => ({
   id,
@@ -34,5 +34,13 @@ describe('getSubtotal', () => {
 describe('applyPromoCode', () => {
   it('applies SALE10 when no code is applied yet', () => {
     expect(applyPromoCode(null, 'SALE10')).toEqual({ code: 'SALE10', error: null });
+  });
+});
+
+describe('getTotal', () => {
+  it('applies a 10% discount with SALE10', () => {
+    const cart: Cart = [{ bookId: '3', quantity: 1 }];
+
+    expect(getTotal(cart, books, 'SALE10')).toBe(90);
   });
 });
