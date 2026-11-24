@@ -19,4 +19,22 @@ describe('searchBooks', () => {
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Harry Potter');
   });
+
+  it('it finds books regardless of case', () => {
+    const books = [
+      {
+        id: '1',
+        title: 'Harry Potter',
+      },
+      {
+        id: '2',
+        title: 'Pride and Prejudice',
+      },
+    ];
+    const query = 'harry';
+    const result = searchBooks(books, query);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].title).toBe('Harry Potter');
+  });
 });
