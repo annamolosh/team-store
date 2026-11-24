@@ -37,4 +37,41 @@ describe('searchBooks', () => {
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Harry Potter');
   });
+
+  it('returns all books when query is empty', () => {
+    const books = [
+      {
+        id: '1',
+        title: 'Harry Potter',
+      },
+      {
+        id: '2',
+        title: 'Pride and Prejudice',
+      },
+    ];
+
+    const query = '';
+    const result = searchBooks(books, query);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].title).toBe('Harry Potter');
+  });
+
+  it('if didnt book find return epty array', () => {
+    const books = [
+      {
+        id: '1',
+        title: 'Harry Potter',
+      },
+      {
+        id: '2',
+        title: 'Pride and Prejudice',
+      },
+    ];
+
+    const query = 'Twitlight';
+    const result = searchBooks(books, query);
+
+    expect(result).toHaveLength(0);
+  });
 });
