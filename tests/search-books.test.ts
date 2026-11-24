@@ -57,7 +57,7 @@ describe('searchBooks', () => {
     expect(result[0].title).toBe('Harry Potter');
   });
 
-  it('if didnt book find return epty array', () => {
+  it('returns an empty array when no books match', () => {
     const books = [
       {
         id: '1',
@@ -69,7 +69,7 @@ describe('searchBooks', () => {
       },
     ];
 
-    const query = 'Twitlight';
+    const query = 'Twilight';
     const result = searchBooks(books, query);
 
     expect(result).toHaveLength(0);
