@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createCartStore } from '../src/store/cart-store';
 
 describe('cart store: actions', () => {
@@ -89,5 +89,55 @@ describe('cart store: actions', () => {
     }
 
     expect(store.getState()).toEqual({ items: [{ bookId: '1', quantity: 1 }], promoCode: null });
+  });
+});
+
+describe('cart store: subscriptions', () => {
+  it('does not call the listener on subscribe', () => {
+    const store = createCartStore(null);
+    const listener = vi.fn();
+
+    store.subscribe(listener);
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('calls the listener with the new state on change', () => {
+    const store = createCartStore(null);
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    store.add('1');
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith({
+      items: [{ bookId: '1', quantity: 1 }],
+      promoCode: null,
+    });
+  });
+
+  it('does not call the listener when nothing changed', () => {
+    const store = createCartStore(null);
+    store.add('1');
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    store.decrease('1');
+    store.remove('missing');
+    store.increase('missing');
+    store.applyPromo('WRONG');
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('does not call the listener after unsubscribe', () => {
+    const store = createCartStore(null);
+    const listener = vi.fn();
+    const unsubscribe = store.subscribe(listener);
+
+    unsubscribe();
+    store.add('1');
+
+    expect(listener).not.toHaveBeenCalled();
   });
 });
