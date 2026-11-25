@@ -1,6 +1,30 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCartStore } from '../src/store/cart-store';
 
+const STORAGE_KEY = 'team-store:cart';
+
+function createFakeStorage(initial: Record<string, string> = {}): Storage {
+  const data = new Map(Object.entries(initial));
+
+  return {
+    getItem: (key: string) => data.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      data.set(key, value);
+    },
+    removeItem: (key: string) => {
+      data.delete(key);
+    },
+  } as Storage;
+}
+
+function createThrowingStorage(): Storage {
+  const fail = (): never => {
+    throw new Error('SecurityError');
+  };
+
+  return { getItem: fail, setItem: fail, removeItem: fail } as unknown as Storage;
+}
+
 describe('cart store: actions', () => {
   it('starts with an empty cart and no promo code', () => {
     expect(createCartStore(null).getState()).toEqual({ items: [], promoCode: null });
@@ -139,5 +163,72 @@ describe('cart store: subscriptions', () => {
     store.add('1');
 
     expect(listener).not.toHaveBeenCalled();
+  });
+});
+
+describe('cart store: localStorage', () => {
+  it('saves the cart as JSON after a change', () => {
+    const storage = createFakeStorage();
+    const store = createCartStore(storage);
+
+    store.add('1');
+
+    expect(JSON.parse(storage.getItem(STORAGE_KEY) ?? 'null')).toEqual({
+      items: [{ bookId: '1', quantity: 1 }],
+      promoCode: null,
+    });
+  });
+
+  it('restores the saved cart in a new store with the same storage', () => {
+    const storage = createFakeStorage();
+    const first = createCartStore(storage);
+    first.add('1');
+    first.add('1');
+    first.applyPromo('SALE10');
+
+    const second = createCartStore(storage);
+
+    expect(second.getState()).toEqual({
+      items: [{ bookId: '1', quantity: 2 }],
+      promoCode: 'SALE10',
+    });
+  });
+
+  it('starts empty when the stored JSON is broken', () => {
+    const storage = createFakeStorage({ [STORAGE_KEY]: '{not json' });
+
+    expect(() => createCartStore(storage)).not.toThrow();
+    expect(createCartStore(storage).getState()).toEqual({ items: [], promoCode: null });
+  });
+
+  it.each([
+    ['not an object', '42'],
+    ['items not an array', '{"items":{},"promoCode":null}'],
+    ['bad item', '{"items":[{"bookId":1,"quantity":1}],"promoCode":null}'],
+    ['zero quantity', '{"items":[{"bookId":"1","quantity":0}],"promoCode":null}'],
+    ['fractional quantity', '{"items":[{"bookId":"1","quantity":1.5}],"promoCode":null}'],
+    ['bad promo code', '{"items":[],"promoCode":10}'],
+  ])('starts empty when the stored structure is wrong (%s)', (_, raw) => {
+    const store = createCartStore(createFakeStorage({ [STORAGE_KEY]: raw }));
+
+    expect(store.getState()).toEqual({ items: [], promoCode: null });
+  });
+
+  it('works without throwing when storage throws', () => {
+    const store = createCartStore(createThrowingStorage());
+
+    expect(() => store.add('1')).not.toThrow();
+    expect(store.getState().items).toEqual([{ bookId: '1', quantity: 1 }]);
+  });
+
+  it('works in memory when storage is null', () => {
+    const store = createCartStore(null);
+
+    expect(() => {
+      store.add('1');
+      store.applyPromo('SALE10');
+      store.clear();
+    }).not.toThrow();
+    expect(store.getState()).toEqual({ items: [], promoCode: null });
   });
 });
