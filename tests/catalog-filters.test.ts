@@ -6,7 +6,7 @@ const makeBook = (id: string, price: number): Book => ({
   id,
   title: `Book ${id}`,
   author: 'Author',
-  genre: 'Genre',
+  genre: 'classic',
   cover: '',
   price,
   stock: 10,
