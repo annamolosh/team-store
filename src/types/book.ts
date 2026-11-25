@@ -1,4 +1,4 @@
-export type Genre = 'novel' | 'fiction' | 'romance' | 'fantasy';
+export type Genre = 'classic' | 'mystery' | 'romance' | 'fantasy' | 'science-fiction';
 
 export interface Book {
   id: string;
