@@ -1,4 +1,12 @@
 import type { Cart } from '../types/cart';
+import {
+  addToCart,
+  clearCart,
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from '../utils/cart';
+import { applyPromoCode } from '../utils/cart-total';
 
 export interface CartState {
   items: Cart;
@@ -18,19 +26,53 @@ export interface CartStore {
   subscribe(listener: Listener): () => void;
 }
 
+const EMPTY_STATE: CartState = { items: [], promoCode: null };
+
+function freezeState(state: CartState): CartState {
+  return Object.freeze({
+    items: Object.freeze(state.items.map((item) => Object.freeze({ ...item }))) as Cart,
+    promoCode: state.promoCode,
+  });
+}
+
+function isSameState(a: CartState, b: CartState): boolean {
+  return (
+    a.promoCode === b.promoCode &&
+    a.items.length === b.items.length &&
+    a.items.every(
+      (item, i) => item.bookId === b.items[i].bookId && item.quantity === b.items[i].quantity,
+    )
+  );
+}
+
 const notImplemented = (): never => {
   throw new Error('Not implemented');
 };
 
 export function createCartStore(): CartStore {
+  let state = freezeState(EMPTY_STATE);
+
+  function setState(next: CartState): void {
+    if (isSameState(state, next)) return;
+    state = freezeState(next);
+  }
+
+  const updateItems = (update: (items: Cart) => Cart): void =>
+    setState({ ...state, items: update(state.items) });
+
   return {
-    getState: notImplemented,
-    add: notImplemented,
-    remove: notImplemented,
-    increase: notImplemented,
-    decrease: notImplemented,
-    clear: notImplemented,
-    applyPromo: notImplemented,
+    getState: () => state,
+    add: (bookId) => updateItems((items) => addToCart(items, bookId)),
+    remove: (bookId) => updateItems((items) => removeFromCart(items, bookId)),
+    increase: (bookId) => updateItems((items) => increaseQuantity(items, bookId)),
+    decrease: (bookId) => updateItems((items) => decreaseQuantity(items, bookId)),
+    clear: () => setState({ items: clearCart(), promoCode: null }),
+    applyPromo(input) {
+      const { code, error } = applyPromoCode(state.promoCode, input);
+      if (error) return error;
+      setState({ ...state, promoCode: code });
+      return null;
+    },
     subscribe: notImplemented,
   };
 }
