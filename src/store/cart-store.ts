@@ -45,16 +45,14 @@ function isSameState(a: CartState, b: CartState): boolean {
   );
 }
 
-const notImplemented = (): never => {
-  throw new Error('Not implemented');
-};
-
 export function createCartStore(): CartStore {
   let state = freezeState(EMPTY_STATE);
+  const listeners = new Set<Listener>();
 
   function setState(next: CartState): void {
     if (isSameState(state, next)) return;
     state = freezeState(next);
+    listeners.forEach((listener) => listener(state));
   }
 
   const updateItems = (update: (items: Cart) => Cart): void =>
@@ -73,7 +71,12 @@ export function createCartStore(): CartStore {
       setState({ ...state, promoCode: code });
       return null;
     },
-    subscribe: notImplemented,
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
   };
 }
 
