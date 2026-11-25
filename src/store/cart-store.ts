@@ -26,7 +26,53 @@ export interface CartStore {
   subscribe(listener: Listener): () => void;
 }
 
+const STORAGE_KEY = 'team-store:cart';
+
 const EMPTY_STATE: CartState = { items: [], promoCode: null };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isCartState(value: unknown): value is CartState {
+  if (!isRecord(value) || !Array.isArray(value.items)) return false;
+
+  const promoOk = value.promoCode === null || typeof value.promoCode === 'string';
+  const itemsOk = value.items.every(
+    (item: unknown) =>
+      isRecord(item) &&
+      typeof item.bookId === 'string' &&
+      item.bookId !== '' &&
+      Number.isInteger(item.quantity) &&
+      (item.quantity as number) >= 1,
+  );
+
+  return promoOk && itemsOk;
+}
+
+function loadState(storage: Storage | null): CartState {
+  if (!storage) return EMPTY_STATE;
+
+  try {
+    const raw = storage.getItem(STORAGE_KEY);
+    if (raw === null) return EMPTY_STATE;
+
+    const parsed: unknown = JSON.parse(raw);
+    return isCartState(parsed) ? parsed : EMPTY_STATE;
+  } catch {
+    return EMPTY_STATE;
+  }
+}
+
+function saveState(storage: Storage | null, state: CartState): void {
+  if (!storage) return;
+
+  try {
+    storage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // storage may be unavailable (private mode, quota) — keep working in memory
+  }
+}
 
 function freezeState(state: CartState): CartState {
   return Object.freeze({
@@ -45,13 +91,14 @@ function isSameState(a: CartState, b: CartState): boolean {
   );
 }
 
-export function createCartStore(): CartStore {
-  let state = freezeState(EMPTY_STATE);
+export function createCartStore(storage: Storage | null = null): CartStore {
+  let state = freezeState(loadState(storage));
   const listeners = new Set<Listener>();
 
   function setState(next: CartState): void {
     if (isSameState(state, next)) return;
     state = freezeState(next);
+    saveState(storage, state);
     listeners.forEach((listener) => listener(state));
   }
 
@@ -80,4 +127,4 @@ export function createCartStore(): CartStore {
   };
 }
 
-export const cartStore = createCartStore();
+export const cartStore = createCartStore(typeof localStorage !== 'undefined' ? localStorage : null);
