@@ -6,6 +6,8 @@ export function setupBookCardEvents(
   cart: Cart,
   onCartChange: (cart: Cart) => void,
 ): void {
+  let currentCart = cart;
+
   container.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLButtonElement>('[data-book-id]');
@@ -16,8 +18,8 @@ export function setupBookCardEvents(
 
     if (!bookId) return;
 
-    const updatedCart = addToCart(cart, bookId);
+    currentCart = addToCart(currentCart, bookId);
 
-    onCartChange(updatedCart);
+    onCartChange(currentCart);
   });
 }
