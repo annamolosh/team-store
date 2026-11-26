@@ -1,3 +1,4 @@
+import './book-card.css';
 import type { Book } from '../types/book';
 
 export function renderBookCard(book: Book): string {
@@ -9,7 +10,7 @@ export function renderBookCard(book: Book): string {
       <p>${book.genre}</p>
       <p>${book.price.toFixed(2)}</p>
       <button type="button" data-book-id="${book.id}">
-        В корзину
+        Add to cart
       </button>
     </article>
   `;
