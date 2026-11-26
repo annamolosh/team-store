@@ -1,4 +1,4 @@
-import type { Book } from '../types/book';
+import type { Book, Genre } from '../types/book';
 
 export type SortOrder = 'default' | 'asc' | 'desc';
 
@@ -6,6 +6,14 @@ export interface PriceAndSortOptions {
   min?: number | null;
   max?: number | null;
   sort: SortOrder;
+}
+
+export function filterByGenre(books: Book[], genre: Genre | 'all'): Book[] {
+  if (genre === 'all') {
+    return [...books];
+  }
+
+  return books.filter((book) => book.genre === genre);
 }
 
 const isBound = (value: number | null | undefined): value is number =>
