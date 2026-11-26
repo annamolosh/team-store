@@ -1,0 +1,110 @@
+/* Price and sort controls: only tokens from styles/variables.css */
+
+.price-sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-5);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+
+.price-sort-price {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.price-sort-legend {
+  padding: 0;
+  margin-bottom: var(--space-2);
+  font-size: var(--font-sm);
+  font-weight: 600;
+}
+
+.price-sort-fields {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.price-sort-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.price-sort-label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-sm);
+}
+
+.price-sort-sort .price-sort-label {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Rows align at the bottom; reserve the hint's space (min-height + margin) so the
+   select lines up with the price inputs, not with the hint. */
+.price-sort-sort {
+  padding-bottom: calc(var(--space-5) + var(--space-2));
+}
+
+.price-sort-input,
+.price-sort-select {
+  min-height: var(--space-7);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-white);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-sm);
+}
+
+.price-sort-input {
+  width: calc(var(--space-8) + var(--space-7));
+}
+
+.price-sort-select {
+  cursor: pointer;
+}
+
+.price-sort-input:focus-visible,
+.price-sort-select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.price-sort-input[aria-invalid] {
+  border-color: var(--color-error);
+}
+
+.price-sort-hint {
+  min-height: var(--space-5);
+  margin: var(--space-2) 0 0;
+  color: var(--color-error);
+  font-size: var(--font-sm);
+}
+
+/* Mobile phones: column, full-width fields */
+@media (max-width: 480px) {
+  .price-sort-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .price-sort-fields {
+    flex-direction: column;
+  }
+
+  .price-sort-sort {
+    padding-bottom: 0;
+  }
+
+  .price-sort-input,
+  .price-sort-select {
+    width: 100%;
+  }
+}
