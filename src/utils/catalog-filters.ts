@@ -8,7 +8,7 @@ export interface PriceAndSortOptions {
   sort: SortOrder;
 }
 
-export function filterByGenre(books: Book[], genre: Genre | 'all'): Book[] {
+export function filterByGenre<T extends { genre: string }>(books: T[], genre: Genre | 'all'): T[] {
   if (genre === 'all') {
     return [...books];
   }

@@ -1,5 +1,3 @@
-import type { Book } from '../types/book.ts';
-
-export function searchBooks(books: Book[], query: string) {
+export function searchBooks<T extends { title: string }>(books: T[], query: string): T[] {
   return books.filter((book) => book.title.toLowerCase().includes(query.toLowerCase()));
 }
