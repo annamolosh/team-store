@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCartStore } from '../src/store/cart-store';
+import { createSafeStorage } from '../src/store/safe-storage';
 
 const STORAGE_KEY = 'team-store:cart';
 
@@ -27,11 +28,14 @@ function createThrowingStorage(): Storage {
 
 describe('cart store: actions', () => {
   it('starts with an empty cart and no promo code', () => {
-    expect(createCartStore(null).getState()).toEqual({ items: [], promoCode: null });
+    expect(createCartStore(createSafeStorage(() => null)).getState()).toEqual({
+      items: [],
+      promoCode: null,
+    });
   });
 
   it('adds a book, and a repeated add increases quantity', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
 
     store.add('1');
     expect(store.getState().items).toEqual([{ bookId: '1', quantity: 1 }]);
@@ -41,7 +45,7 @@ describe('cart store: actions', () => {
   });
 
   it('removes a book', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
     store.add('2');
 
@@ -51,7 +55,7 @@ describe('cart store: actions', () => {
   });
 
   it('increases and decreases quantity', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
 
     store.increase('1');
@@ -63,7 +67,7 @@ describe('cart store: actions', () => {
   });
 
   it('keeps quantity at 1 when decreasing from 1', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
 
     store.decrease('1');
@@ -72,7 +76,7 @@ describe('cart store: actions', () => {
   });
 
   it('clear empties the cart and resets the promo code', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
     store.applyPromo('SALE10');
 
@@ -82,14 +86,14 @@ describe('cart store: actions', () => {
   });
 
   it('applies a valid promo code and returns null', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
 
     expect(store.applyPromo('SALE10')).toBeNull();
     expect(store.getState().promoCode).toBe('SALE10');
   });
 
   it('returns an error for an invalid promo code and keeps the state', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
     const before = store.getState();
 
@@ -100,7 +104,7 @@ describe('cart store: actions', () => {
   });
 
   it('mutating the result of getState does not change the store', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
     const state = store.getState();
 
@@ -118,7 +122,7 @@ describe('cart store: actions', () => {
 
 describe('cart store: subscriptions', () => {
   it('does not call the listener on subscribe', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     const listener = vi.fn();
 
     store.subscribe(listener);
@@ -127,7 +131,7 @@ describe('cart store: subscriptions', () => {
   });
 
   it('calls the listener with the new state on change', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     const listener = vi.fn();
     store.subscribe(listener);
 
@@ -141,7 +145,7 @@ describe('cart store: subscriptions', () => {
   });
 
   it('does not call the listener when nothing changed', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     store.add('1');
     const listener = vi.fn();
     store.subscribe(listener);
@@ -155,7 +159,7 @@ describe('cart store: subscriptions', () => {
   });
 
   it('does not call the listener after unsubscribe', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
     const listener = vi.fn();
     const unsubscribe = store.subscribe(listener);
 
@@ -169,7 +173,7 @@ describe('cart store: subscriptions', () => {
 describe('cart store: localStorage', () => {
   it('saves the cart as JSON after a change', () => {
     const storage = createFakeStorage();
-    const store = createCartStore(storage);
+    const store = createCartStore(createSafeStorage(() => storage));
 
     store.add('1');
 
@@ -181,12 +185,12 @@ describe('cart store: localStorage', () => {
 
   it('restores the saved cart in a new store with the same storage', () => {
     const storage = createFakeStorage();
-    const first = createCartStore(storage);
+    const first = createCartStore(createSafeStorage(() => storage));
     first.add('1');
     first.add('1');
     first.applyPromo('SALE10');
 
-    const second = createCartStore(storage);
+    const second = createCartStore(createSafeStorage(() => storage));
 
     expect(second.getState()).toEqual({
       items: [{ bookId: '1', quantity: 2 }],
@@ -197,8 +201,11 @@ describe('cart store: localStorage', () => {
   it('starts empty when the stored JSON is broken', () => {
     const storage = createFakeStorage({ [STORAGE_KEY]: '{not json' });
 
-    expect(() => createCartStore(storage)).not.toThrow();
-    expect(createCartStore(storage).getState()).toEqual({ items: [], promoCode: null });
+    expect(() => createCartStore(createSafeStorage(() => storage))).not.toThrow();
+    expect(createCartStore(createSafeStorage(() => storage)).getState()).toEqual({
+      items: [],
+      promoCode: null,
+    });
   });
 
   it.each([
@@ -209,20 +216,22 @@ describe('cart store: localStorage', () => {
     ['fractional quantity', '{"items":[{"bookId":"1","quantity":1.5}],"promoCode":null}'],
     ['bad promo code', '{"items":[],"promoCode":10}'],
   ])('starts empty when the stored structure is wrong (%s)', (_, raw) => {
-    const store = createCartStore(createFakeStorage({ [STORAGE_KEY]: raw }));
+    const store = createCartStore(
+      createSafeStorage(() => createFakeStorage({ [STORAGE_KEY]: raw })),
+    );
 
     expect(store.getState()).toEqual({ items: [], promoCode: null });
   });
 
   it('works without throwing when storage throws', () => {
-    const store = createCartStore(createThrowingStorage());
+    const store = createCartStore(createSafeStorage(() => createThrowingStorage()));
 
     expect(() => store.add('1')).not.toThrow();
     expect(store.getState().items).toEqual([{ bookId: '1', quantity: 1 }]);
   });
 
   it('works in memory when storage is null', () => {
-    const store = createCartStore(null);
+    const store = createCartStore(createSafeStorage(() => null));
 
     expect(() => {
       store.add('1');

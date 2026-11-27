@@ -7,6 +7,7 @@ import {
   removeFromCart,
 } from '../utils/cart';
 import { applyPromoCode } from '../utils/cart-total';
+import { createSafeStorage, type SafeStorage } from './safe-storage';
 
 export interface CartState {
   items: Cart;
@@ -50,27 +51,15 @@ function isCartState(value: unknown): value is CartState {
   return promoOk && itemsOk;
 }
 
-function loadState(storage: Storage | null): CartState {
-  if (!storage) return EMPTY_STATE;
+function parseState(raw: string | null): CartState {
+  if (raw === null) return EMPTY_STATE;
 
   try {
-    const raw = storage.getItem(STORAGE_KEY);
-    if (raw === null) return EMPTY_STATE;
-
     const parsed: unknown = JSON.parse(raw);
     return isCartState(parsed) ? parsed : EMPTY_STATE;
   } catch {
+    // broken JSON: start with an empty cart
     return EMPTY_STATE;
-  }
-}
-
-function saveState(storage: Storage | null, state: CartState): void {
-  if (!storage) return;
-
-  try {
-    storage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // storage may be unavailable (private mode, quota) — keep working in memory
   }
 }
 
@@ -91,14 +80,14 @@ function isSameState(a: CartState, b: CartState): boolean {
   );
 }
 
-export function createCartStore(storage: Storage | null = null): CartStore {
-  let state = freezeState(loadState(storage));
+export function createCartStore(storage: SafeStorage): CartStore {
+  let state = freezeState(parseState(storage.getItem(STORAGE_KEY)));
   const listeners = new Set<Listener>();
 
   function setState(next: CartState): void {
     if (isSameState(state, next)) return;
     state = freezeState(next);
-    saveState(storage, state);
+    storage.setItem(STORAGE_KEY, JSON.stringify(state));
     listeners.forEach((listener) => listener(state));
   }
 
@@ -127,4 +116,4 @@ export function createCartStore(storage: Storage | null = null): CartStore {
   };
 }
 
-export const cartStore = createCartStore(typeof localStorage !== 'undefined' ? localStorage : null);
+export const cartStore = createCartStore(createSafeStorage(() => localStorage));
