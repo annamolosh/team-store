@@ -2,12 +2,87 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+      rel="stylesheet"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>team-store</title>
   </head>
   <body>
-    <div id="app"></div>
+    <header class="header">
+      <a href="#" class="logo">BookStore</a>
+
+      <nav class="navigation">
+        <a href="#">Home</a>
+        <a href="#">Catalog</a>
+        <a href="#">About Us</a>
+        <a href="#">Cart</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Good Books. Better mood.</h1>
+        <p>
+          Explore our collection of books and find stories that inspire, entertain, and stay with
+          you forever.
+        </p>
+        <a href="#featured-books" class="button">Explore Books</a>
+      </section>
+
+      <section class="about" id="about">
+        <div class="about-content">
+          <h2>Made by our team</h2>
+          <p>
+            BookStore is a team project. Discover our team members, explore their contributions, and
+            see how we brought this project to life.
+          </p>
+          <a href="team.html" class="button">Discover Our Team</a>
+        </div>
+        <div class="about-images">
+          <img src="/src/assets/images/developer-1.jpeg" alt="Team member" class="about-image" />
+          <img src="/src/assets/images/developer-2.jpeg" alt="Team member" class="about-image" />
+        </div>
+      </section>
+
+      <section class="featured-books" id="featured-books">
+        <div class="featured-header">
+          <div>
+            <span class="featured-label">OUR COLLECTION</span>
+            <h2>Featured Books</h2>
+          </div>
+          <a href="#" class="button">View All Books</a>
+        </div>
+        <div id="books-container">
+          <!-- Books will be rendered here later -->
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a href="https://rs.school/" target="_blank" rel="noopener noreferrer" class="school-link">
+        <img
+          src="https://rs.school/_next/static/media/rss-logo.c19ce1b4.svg"
+          alt="The Rolling Scopes School"
+          class="school-logo"
+        />
+      </a>
+
+      <p>2026 BookStore — A Team Educational Project</p>
+      <div>
+        <a href="https://github.com/Romkalis" target="_blank" rel="noopener noreferrer"
+          >Roman Bondachuk</a
+        >
+        <a href="https://github.com/annamolosh" target="_blank" rel="noopener noreferrer"
+          >Hanna Molash</a
+        >
+      </div>
+    </footer>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
