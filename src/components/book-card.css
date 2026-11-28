@@ -1,0 +1,101 @@
+.book-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+  max-width: var(--container-width);
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 414px;
+  padding: var(--space-4);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(41, 43, 37, 0.06);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(41, 43, 37, 0.12);
+}
+
+.book-card img {
+  width: 100%;
+  height: 220px;
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-bottom: var(--space-4);
+  background-color: var(--color-background);
+}
+
+.book-card h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  min-height: 44px;
+  margin: 0 0 var(--space-2);
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: var(--font-lg);
+}
+
+.book-card p {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: var(--font-sm);
+}
+
+.book-card button {
+  min-height: 44px;
+  margin-top: auto;
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.book-card button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .book-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .book-list {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: var(--space-4);
+  }
+
+  .book-card {
+    width: 100%;
+    max-width: 304px;
+    min-height: 414px;
+  }
+
+  .book-card img {
+    height: 220px;
+  }
+}
