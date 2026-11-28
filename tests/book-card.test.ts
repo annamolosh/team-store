@@ -10,7 +10,7 @@ describe('renderBookCard', () => {
     expect(html).toContain('F. Scott Fitzgerald');
     expect(html).toContain('classic');
     expect(html).toContain('15.99');
-    expect(html).toContain('/images/great-gatsby.jpg');
+    expect(html).toContain(books[0].cover);
   });
 });
 
