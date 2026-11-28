@@ -12,6 +12,35 @@ describe('renderBookCard', () => {
     expect(html).toContain('15.99');
     expect(html).toContain(books[0].cover);
   });
+
+  it('should escape HTML in book information', () => {
+    const maliciousBook = {
+      ...books[0],
+      title: '<img src=x onerror=alert(1)>',
+      author: '<script>alert(1)</script>',
+    };
+
+    const html = renderBookCard(maliciousBook);
+
+    expect(html).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    expect(html).not.toContain('<img src=x onerror=alert(1)>');
+    expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+  });
+
+  it('should reject unsafe image URLs', () => {
+    const javascriptBook = {
+      ...books[0],
+      cover: 'javascript:alert(1)',
+    };
+
+    const dataBook = {
+      ...books[0],
+      cover: 'data:text/html,<script>alert(1)</script>',
+    };
+
+    expect(renderBookCard(javascriptBook)).toContain('<img src=""');
+    expect(renderBookCard(dataBook)).toContain('<img src=""');
+  });
 });
 
 describe('renderBookList', () => {

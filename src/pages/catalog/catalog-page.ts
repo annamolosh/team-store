@@ -18,7 +18,7 @@ export function mountCatalogPage(
   container: HTMLElement,
   cart: Cart,
   onCartChange: (cart: Cart) => void,
-): void {
+): () => void {
   container.innerHTML = renderCatalogPage();
-  setupBookCardEvents(container, cart, onCartChange);
+  return setupBookCardEvents(container, cart, onCartChange);
 }

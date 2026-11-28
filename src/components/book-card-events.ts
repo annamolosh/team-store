@@ -5,10 +5,10 @@ export function setupBookCardEvents(
   container: HTMLElement,
   cart: Cart,
   onCartChange: (cart: Cart) => void,
-): void {
+): () => void {
   let currentCart = cart;
 
-  container.addEventListener('click', (event) => {
+  const handleClick = (event: Event) => {
     const target = event.target as HTMLElement;
     const button = target.closest<HTMLButtonElement>('[data-book-id]');
 
@@ -21,5 +21,11 @@ export function setupBookCardEvents(
     currentCart = addToCart(currentCart, bookId);
 
     onCartChange(currentCart);
-  });
+  };
+
+  container.addEventListener('click', handleClick);
+
+  return () => {
+    container.removeEventListener('click', handleClick);
+  };
 }
